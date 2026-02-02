@@ -1,6 +1,9 @@
 import musicbrainzngs
+import logging
 from typing import Optional, Tuple, List
 from app.models import Track
+
+logger = logging.getLogger(__name__)
 
 
 class MusicBrainzService:
@@ -33,7 +36,7 @@ class MusicBrainzService:
             result = musicbrainzngs.search_recordings(query=query, limit=limit)
             return result.get('recording-list', [])
         except Exception as e:
-            print(f"MusicBrainz API error: {e}")
+            logger.error(f"MusicBrainz API error: {e}")
             return []
     
     def get_best_match(self, query: str) -> Optional[Tuple[str, str, str, float]]:

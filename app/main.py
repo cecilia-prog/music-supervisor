@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from typing import List
 from pathlib import Path
+from contextlib import asynccontextmanager
+import logging
 
 from app.config import Settings, get_settings
 from app.models import Track, TrackSearchResult, SearchRequest, ResolveRequest, ResolveResponse
@@ -9,13 +11,13 @@ from app.catalog import MusicCatalog
 from app.search import SearchRanker
 from app.musicbrainz import MusicBrainzService
 
-
-# Initialize FastAPI app
-app = FastAPI(
-    title="Music Metadata Aggregator",
-    description="AI Music Supervisor - Music Metadata Aggregator API",
-    version="1.0.0"
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+logger = logging.getLogger(__name__)
+
 
 # Global instances
 settings = get_settings()
@@ -23,10 +25,13 @@ catalog = None
 musicbrainz_service = None
 
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize services on startup."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize and cleanup services."""
     global catalog, musicbrainz_service
+    
+    # Startup
+    logger.info("Starting Music Metadata Aggregator service...")
     
     # Initialize catalog
     catalog_path = Path(settings.catalog_path)
@@ -35,6 +40,7 @@ async def startup_event():
         catalog_path = Path(__file__).parent.parent / settings.catalog_path
     
     catalog = MusicCatalog(str(catalog_path))
+    logger.info(f"Loaded {len(catalog.tracks)} tracks from catalog")
     
     # Initialize MusicBrainz service
     musicbrainz_service = MusicBrainzService(
@@ -42,8 +48,21 @@ async def startup_event():
         app_version=settings.musicbrainz_version,
         contact=settings.musicbrainz_contact
     )
+    logger.info("MusicBrainz service initialized")
     
-    print(f"Loaded {len(catalog.tracks)} tracks from catalog")
+    yield
+    
+    # Shutdown
+    logger.info("Shutting down Music Metadata Aggregator service...")
+
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="Music Metadata Aggregator",
+    description="AI Music Supervisor - Music Metadata Aggregator API",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 
 @app.get("/")
