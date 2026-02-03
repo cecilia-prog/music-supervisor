@@ -1,227 +1,339 @@
-# Music Metadata Aggregator
+# Music Supervisor 🎵
 
-A FastAPI-based Music Metadata Aggregator service for an AI Music Supervisor. This backend service manages an internal music catalog and integrates with the MusicBrainz API to provide comprehensive music metadata and search capabilities.
+An AI-powered music discovery system with voice interface. Search and discover music through conversation using 11Labs AI, backed by a FastAPI service with intelligent search and MusicBrainz integration.
 
-## Features
+## 🌟 Features
 
-- **Internal Music Catalog**: Load and manage a music catalog from CSV file
-- **Search Tracks**: Search tracks with intelligent ranking based on title, artist, tags, moods, and genres
-- **Fetch by ID**: Retrieve specific tracks by their internal catalog ID
-- **Query Resolution**: Resolve free-text queries to canonical IDs using the MusicBrainz API
-- **RESTful API**: Clean, well-documented REST API built with FastAPI
-- **Auto-generated Documentation**: Interactive API documentation via Swagger UI
+### Backend (FastAPI)
+- **Music Catalog Management**: 30 curated classic tracks with rich metadata
+- **Intelligent Search**: Smart ranking based on title, artist, tags, moods, and genres
+- **MusicBrainz Integration**: Resolve song names to canonical IDs
+- **11Labs Voice AI**: Webhook endpoints for conversational music discovery
+- **RESTful API**: Clean, documented API with auto-generated Swagger UI
+- **CORS Enabled**: Ready for frontend integration
 
-## Project Structure
+### Frontend (React + 11Labs)
+- **Voice Search**: Natural language music discovery through conversation
+- **Beautiful UI**: Modern React interface with Tailwind CSS
+- **Real-time Results**: Live track cards with detailed metadata
+- **Audio Visualization**: Real-time microphone activity meters
+- **Conversation Mode**: Immersive voice-first experience
+- **Chat Mode**: Text-based search with voice option
+
+## 📁 Project Structure
 
 ```
 music-supervisor/
-├── app/
-│   ├── __init__.py          # Package initialization
-│   ├── main.py              # FastAPI application and endpoints
-│   ├── models.py            # Pydantic data models
-│   ├── catalog.py           # Music catalog management
-│   ├── search.py            # Search and ranking logic
-│   ├── musicbrainz.py       # MusicBrainz API integration
-│   └── config.py            # Application configuration
+├── app/                           # Backend API
+│   ├── main.py                   # FastAPI app + 11Labs webhook endpoints
+│   ├── elevenlabs.py             # 🆕 11Labs webhook handler
+│   ├── catalog.py                # Music catalog management
+│   ├── search.py                 # Intelligent search & ranking
+│   ├── musicbrainz.py            # MusicBrainz API integration
+│   ├── models.py                 # Pydantic data models
+│   └── config.py                 # Configuration
+├── frontend-app/                 # 🆕 Voice UI (React + 11Labs)
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── music/           # Music-specific components
+│   │   │   │   ├── TrackCard.jsx
+│   │   │   │   ├── MusicResults.jsx
+│   │   │   │   └── musicHelpers.js
+│   │   │   ├── brand/           # Branding components
+│   │   │   └── ChatBox.jsx      # Main conversation UI
+│   │   └── lib/
+│   │       ├── agent/           # 11Labs integration
+│   │       ├── audio/           # Audio handling
+│   │       └── musicApi.js      # Music API client
+│   ├── .env.local               # ⚠️ YOU CREATE: 11Labs credentials
+│   ├── ELEVENLABS_SETUP.md      # 11Labs configuration guide
+│   └── README.md                # Frontend documentation
 ├── data/
-│   └── music_catalog.csv    # Internal music catalog (30 classic tracks)
-├── requirements.txt         # Python dependencies
-├── .gitignore              # Git ignore rules
-└── README.md               # This file
+│   └── music_catalog.csv        # 30 classic tracks
+├── frontend/                     # Simple HTML demo (backup)
+├── requirements.txt              # Python dependencies
+├── SETUP_COMPLETE.md            # 🆕 Quick start guide
+├── ELEVENLABS_INTEGRATION.md    # 🆕 Integration details
+├── SANDY_MIGRATION_PLAN.md      # 🆕 Migration documentation
+└── README.md                     # This file
 ```
 
-## Installation
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip (Python package manager)
+**Backend:**
+- Python 3.8+
+- pip
 
-### Setup
+**Frontend:**
+- Node.js 20+
+- pnpm
+- 11Labs account (https://elevenlabs.io)
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/cecilia-prog/music-supervisor.git
-   cd music-supervisor
-   ```
-
-2. **Create a virtual environment** (recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Running the Service
-
-### Start the Server
-
-Run the FastAPI application using uvicorn:
+### 1. Backend Setup
 
 ```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
 uvicorn app.main:app --reload
 ```
 
-The service will start on `http://localhost:8000`
+Backend runs at: `http://localhost:8000`  
+API docs at: `http://localhost:8000/docs`
 
-### Access API Documentation
+### 2. Frontend Setup
 
-Once the server is running, you can access:
+```bash
+cd frontend-app
+
+# Install dependencies
+pnpm install
+
+# Create .env.local with your credentials
+# See ELEVENLABS_SETUP.md for configuration details
+cat > .env.local << EOF
+VITE_MUSIC_API_URL=http://localhost:8000
+VITE_ELEVENLABS_API_KEY=your_api_key_here
+VITE_ELEVENLABS_AGENT_ID=your_agent_id_here
+EOF
+
+# Start the dev server
+pnpm dev
+```
+
+Frontend runs at: `http://localhost:5173`
+
+### 3. Configure 11Labs Agent
+
+Follow the guide in `frontend-app/ELEVENLABS_SETUP.md` to:
+1. Create an 11Labs account
+2. Set up a conversational AI agent
+3. Configure 3 custom functions (search_music, get_track_info, recommend_by_mood)
+4. Add webhook URL (requires ngrok for local testing)
+
+## 📡 API Endpoints
+
+### Music Catalog
+
+## 📡 API Endpoints
+
+### Music Catalog
+
+**GET** `/api/v1/tracks` - Get all tracks  
+**GET** `/api/v1/tracks/{id}` - Get track by ID  
+**POST** `/api/v1/search` - Search tracks with ranking  
+**POST** `/api/v1/resolve` - Resolve song name to MusicBrainz ID
+
+### 11Labs Integration (🆕)
+
+**POST** `/api/v1/elevenlabs/webhook` - Webhook for agent callbacks  
+**GET** `/api/v1/elevenlabs/config` - Webhook configuration info
+
+### Documentation
 
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 - **OpenAPI JSON**: http://localhost:8000/openapi.json
 
-## API Endpoints
+## 🧠 How It Works
 
-### 1. Root Endpoint
+### Voice Interaction Flow
 
-Get API information and available endpoints.
+```
+1. User speaks → 11Labs Agent processes speech
+2. Agent determines intent (search, track info, mood recommendation)
+3. Agent calls custom function → Webhook to backend
+4. Backend processes request → Returns music data
+5. Agent speaks response → Frontend displays TrackCards
+6. User sees results + hears AI explanation
+```
 
-**Request**:
+### 11Labs Custom Functions
+
+**search_music**: Find tracks by artist, title, genre, tags  
+**get_track_info**: Get detailed info about a specific track  
+**recommend_by_mood**: Find tracks matching a mood (energetic, chill, etc.)
+
+## 🎨 Music Components
+
+### TrackCard
+Displays individual track with:
+- Title, Artist, Album
+- Duration, Year
+- Genre badge with emoji
+- Mood badge with emoji  
+- Tags
+- Relevance score (search results)
+
+### MusicResults
+List view with:
+- Search query display
+- Result count
+- Grid of TrackCards
+
+### musicHelpers
+Utilities for:
+- `formatDuration()` - Convert seconds to MM:SS
+- `getMoodEmoji()` - Map moods to emojis
+- `getGenreEmoji()` - Map genres to emojis
+
+## 📚 Documentation
+
+- **SETUP_COMPLETE.md** - Complete setup checklist
+- **ELEVENLABS_INTEGRATION.md** - Technical integration details
+- **frontend-app/ELEVENLABS_SETUP.md** - Step-by-step 11Labs config
+- **SANDY_MIGRATION_PLAN.md** - Migration documentation
+
+## 🔧 Development
+
+### Backend Testing
+
 ```bash
+# Run health check
 curl http://localhost:8000/
-```
 
-**Response**:
-```json
-{
-  "name": "Music Metadata Aggregator",
-  "version": "1.0.0",
-  "description": "AI Music Supervisor - Music Metadata Aggregator API",
-  "endpoints": {
-    "search": "/api/v1/search",
-    "track_by_id": "/api/v1/tracks/{track_id}",
-    "resolve": "/api/v1/resolve",
-    "all_tracks": "/api/v1/tracks"
-  }
-}
-```
-
-### 2. Get All Tracks
-
-Retrieve all tracks in the catalog.
-
-**Request**:
-```bash
-curl http://localhost:8000/api/v1/tracks
-```
-
-**Response**: Array of track objects
-
-### 3. Get Track by ID
-
-Fetch a specific track by its internal ID.
-
-**Request**:
-```bash
-curl http://localhost:8000/api/v1/tracks/1
-```
-
-**Response**:
-```json
-{
-  "id": 1,
-  "title": "Bohemian Rhapsody",
-  "artist": "Queen",
-  "album": "A Night at the Opera",
-  "duration": 354,
-  "genre": "Rock",
-  "mood": "Epic",
-  "tags": "rock,classic,opera",
-  "year": 1975
-}
-```
-
-### 4. Search Tracks
-
-Search tracks with ranking based on multiple fields.
-
-**Request**:
-```bash
+# Search for rock tracks
 curl -X POST http://localhost:8000/api/v1/search \
   -H "Content-Type: application/json" \
-  -d '{
-    "query": "rock",
-    "limit": 5
-  }'
-```
+  -d '{"query": "rock", "limit": 5}'
 
-**Response**:
-```json
-[
-  {
-    "track": {
-      "id": 1,
-      "title": "Bohemian Rhapsody",
-      "artist": "Queen",
-      "album": "A Night at the Opera",
-      "duration": 354,
-      "genre": "Rock",
-      "mood": "Epic",
-      "tags": "rock,classic,opera",
-      "year": 1975
-    },
-    "score": 5.5
-  },
-  ...
-]
-```
-
-**More Search Examples**:
-
-Search by artist:
-```bash
-curl -X POST http://localhost:8000/api/v1/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Beatles", "limit": 10}'
-```
-
-Search by mood:
-```bash
-curl -X POST http://localhost:8000/api/v1/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "peaceful", "limit": 5}'
-```
-
-Search by tag:
-```bash
-curl -X POST http://localhost:8000/api/v1/search \
-  -H "Content-Type: application/json" \
-  -d '{"query": "80s", "limit": 10}'
-```
-
-### 5. Resolve Query
-
-Resolve free-text queries to canonical IDs using MusicBrainz API.
-
-**Request**:
-```bash
+# Resolve a song name
 curl -X POST http://localhost:8000/api/v1/resolve \
   -H "Content-Type: application/json" \
-  -d '{
-    "query": "Imagine by John Lennon"
-  }'
+  -d '{"query": "Bohemian Rhapsody Queen"}'
 ```
 
-**Response**:
-```json
-{
-  "query": "Imagine by John Lennon",
-  "canonical_id": 5,
-  "musicbrainz_id": "6b9f0a60-cb5b-4d26-949e-9d5a5e130b53",
-  "matched_track": {
-    "id": 5,
-    "title": "Imagine",
-    "artist": "John Lennon",
-    "album": "Imagine",
-    "duration": 183,
-    "genre": "Pop",
-    "mood": "Peaceful",
+### Frontend Development
+
+```bash
+cd frontend-app
+
+# Install dependencies
+pnpm install
+
+# Run dev server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+```
+
+### Local Testing with ngrok
+
+For webhook testing with 11Labs:
+
+```bash
+# Expose backend to internet
+ngrok http 8000
+
+# Copy the https URL (e.g., https://abc123.ngrok.io)
+# Add to 11Labs agent webhook URL: https://abc123.ngrok.io/api/v1/elevenlabs/webhook
+```
+
+## 📊 Music Catalog
+
+30 classic tracks including:
+- Rock: Queen, Led Zeppelin, The Beatles
+- Pop: Michael Jackson, Madonna
+- Electronic: Daft Punk, Kraftwerk
+- Hip-Hop: Public Enemy, Dr. Dre
+- Classical: Bach, Mozart, Beethoven
+- Jazz: Miles Davis, John Coltrane
+- And more...
+
+Each track includes:
+- Title, Artist, Album
+- Duration, Year
+- Genre, Mood
+- Searchable tags
+
+## 🛠️ Tech Stack
+
+### Backend
+- **FastAPI** 0.109.1 - Modern Python web framework
+- **Uvicorn** - ASGI server
+- **Pydantic** - Data validation
+- **musicbrainzngs** - MusicBrainz API client
+- **python-dotenv** - Environment management
+
+### Frontend
+- **React** 19 - UI library
+- **Vite** 7 - Build tool
+- **Tailwind CSS** 4 - Styling
+- **Radix UI** - Accessible components
+- **@elevenlabs/elevenlabs-js** 2.18.0 - Voice AI SDK
+- **pnpm** - Package manager
+
+## 🐛 Troubleshooting
+
+### Backend won't start
+- Check Python version: `python --version` (need 3.8+)
+- Ensure all dependencies installed: `pip install -r requirements.txt`
+- Check port 8000 is available: `lsof -i :8000`
+
+### Frontend won't start
+- Check Node version: `node --version` (need 20+)
+- Install pnpm: `npm install -g pnpm`
+- Delete `node_modules` and reinstall: `rm -rf node_modules && pnpm install`
+
+### 11Labs not working
+- Verify API key in `.env.local`
+- Check agent ID is correct
+- Confirm webhook URL is accessible (use ngrok for local)
+- Review `frontend-app/ELEVENLABS_SETUP.md`
+
+### No music results showing
+- Ensure backend is running on port 8000
+- Check `VITE_MUSIC_API_URL` in `.env.local`
+- Open browser console for errors
+- Verify CORS is enabled in backend
+
+## 🚦 Current Status
+
+✅ **Completed:**
+- FastAPI backend with music catalog
+- Intelligent search & ranking
+- MusicBrainz integration
+- 11Labs webhook handler
+- React frontend with voice UI
+- Music components (TrackCard, MusicResults)
+- Full documentation
+
+⏳ **Requires User Setup:**
+- Create 11Labs account
+- Get API key & Agent ID
+- Configure custom functions in 11Labs
+- Create `.env.local` with credentials
+- Install frontend dependencies (`pnpm install`)
+- Expose backend with ngrok for testing
+
+## 📝 License
+
+MIT
+
+## 👤 Author
+
+Cecilia Conde
+
+---
+
+**Need Help?** Check the detailed guides:
+- Quick Start: `SETUP_COMPLETE.md`
+- 11Labs Setup: `frontend-app/ELEVENLABS_SETUP.md`
+- Integration Details: `ELEVENLABS_INTEGRATION.md`
+
+---
+
+**Need Help?** Check the detailed guides:
+- Quick Start: `SETUP_COMPLETE.md`
+- 11Labs Setup: `frontend-app/ELEVENLABS_SETUP.md`
+- Integration Details: `ELEVENLABS_INTEGRATION.md`
     "tags": "pop,piano,inspirational",
     "year": 1971
   },

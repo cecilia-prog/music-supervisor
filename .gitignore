@@ -40,6 +40,26 @@ Thumbs.db
 # Environment variables
 .env
 .env.local
+.env.production
+.env.*.local
 
 # Logs
 *.log
+
+# Cache
+data/cache/
+__pycache__/
+
+# Nested git repositories (Sandy copy)
+frontend-app/sandy.git/
+frontend-app/.git/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# API keys and secrets
+*.pem
+*.key
+secrets/

@@ -1,0 +1,9 @@
+{
+  "all": {
+    "sourceCodeDir": ".",
+    "outDir": "public/vite",
+    "base": "/",
+    "host": "localhost",
+    "port": 5173
+  }
+}

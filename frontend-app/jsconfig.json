@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["./*"],
+      "#lib/*": ["./lib/*"],
+      "./api/*": ["./api/*"]
+    }
+  },
+  "include": ["**/*", "vite-env.d.ts"]
+}
